@@ -1,0 +1,14 @@
+{
+  "singleAttributePerLine": true,
+  "experimentalTernaries": true,
+  "printWidth": 80,
+  "tabWidth": 2,
+  "semi": true,
+  "quoteProps": "preserve",
+  "bracketSpacing": false,
+  "bracketSameLine": false,
+  "proseWrap": "always",
+  "singleQuote": false,
+  "trailingComma": "es5",
+  "plugins": ["prettier-plugin-tailwindcss"]
+}

@@ -1,0 +1,1 @@
+export type StoryType = { type: string, url: string, duration: number }

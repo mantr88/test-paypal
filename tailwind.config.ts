@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss";
+import type {Config} from "tailwindcss";
 
 const config: Config = {
   content: [
@@ -8,13 +8,164 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      height: {
+        "inherit": "inherit",
+      },
+      colors: {
+        blue: {
+          20: "#F7F8F9",
+          30: "#F2F3F4",
+          50: "#CFEAF5",
+          60: "#9ED5EC",
+          100: "#DBEFF8",
+          150: "#E9F1F5",
+          200: "#C6E7F1",
+          300: "#B6DFF1",
+          400: "#86CAE7",
+          500: "#6498D7",
+          600: "#51A5C9",
+          700: "#28ABE3",
+          800: "#3A87A8",
+          900: "#0094D3",
+          950: "#1C3378",
+          1000: "#216784",
+        },
+        white: "#FFFFFF",
+        green: {
+          600: "#00B71D",
+          700: "#6FC07C",
+          900: "#338440",
+        },
+        red: {
+          600: "#FF3419",
+          900: "#B81000",
+        },
+        grey: {
+          50: "#E9F1F5",
+          60: "#A9BCC2",
+          100: "#D2E2E8",
+          200: "#E2EAEE",
+          300: "#C0CDD2",
+          400: "#90A4AA",
+          500: "#748287",
+          600: "#BFBFBF",
+          700: "#D9D9D9",
+          800: "#5E6669",
+        },
+        amber: {
+          200: "#FFD3B2",
+          300: "#FF6B00",
+          400: "#FFB433",
+          700: "#CDAE0E",
+        },
+        orange: {
+          100: "#FFF6E6",
+          200: "#FFF0E5",
+          300: "#FFC499",
+          400: "#FFA666",
+          500: "#FFA100",
+          600: "#FA6D07",
+          700: "#CC5600",
+          800: "#FF8933",
+          900: "#994000",
+          1000: "#996100",
+        },
+        violet: {
+          600: "#AE47F0",
+          900: "#6A03AC",
+        },
+        textGray: "#3D4548",
+        textDarkGray: "#242C2F",
+        textBlack: "#0A0D0E",
+        american: "#0087B1",
+      },
+      fontFamily: {
+        sfProDisplay: ["SF Pro Display", "sans-serif"],
+      },
+      borderRadius: {
+        "1xl": "10px",
+        "4xl": "18px",
+        "5xl": "20px",
+        "6xl": "40px",
+        "7xl": "50px",
+        "8xl": "60px",
+        "9xl": "100px",
+      },
+      boxShadow: {
+        "sm": "4px 0px 20px 0px rgba(142, 171, 173, 0.19)",
+        "sm2": "0 -20px 20px -20px rgba(142, 171, 173, 0.19)",
+        "3xl":
+          " 0px 4px 9px 0px #004C7712,0px 17px 17px 0px #004C770D,0px 39px 23px 0px #004C7705,0px 69px 28px 0px #004C7703,0px 108px 30px 0px #00355300",
+        "4xl":
+          "0px 2px 3px 0px #0035531A,0px 6px 6px 0px #00355317,0px 14px 8px 0px #0035530D,0px 24px 10px 0px #00355303, 0px 38px 11px 0px #00355300",
+        "5xl":
+          "0px 1px 2px 0px #7F8FA41A, 0px 3px 3px 0px #7F8FA417, 0px 7px 4px 0px #7F8FA40D, 0px 12px 5px 0px #7F8FA403, 0px 19px 5px 0px #7F8FA400",
+        "6xl":
+          "0px 19px 5px 0px rgba(127, 143, 164, 0.00), 0px 12px 5px 0px rgba(127, 143, 164, 0.01), 0px 7px 4px 0px rgba(127, 143, 164, 0.05), 0px 3px 3px 0px rgba(127, 143, 164, 0.09), 0px 1px 2px 0px rgba(127, 143, 164, 0.10)",
+        "7xl": "4px 0px 20px 0px rgba(142, 171, 173, 0.19)",
+      },
+      fontSize: {
+        "xss": ["10px", "10px"],
+        "xs": ["12px", "12px"],
+        "xs2": ["12px", "14.8px"],
+        "s2": ["13px", "14.8px"],
+        "sm": ["14px", "16.8px"],
+        "sm1": ["14px", "15.96px"],
+        "s22": ["14px", "18.2px"],
+        "s23": ["14px", "21px"],
+        "s": ["15px", "18px"],
+        "s1": ["15px", "19.5px"],
+        "s1l": ["15px", "16.5px"],
+        "s3": ["15px", "16.5px"],
+        "sm2": ["16px", "19.2px"],
+        "sm3": ["16px", "22.4px"],
+        "sm4": ["16px", "20.8px"],
+        "m": ["17px", "18.7px"],
+        "m2": ["17px", "22.1px"],
+        "m3": ["17px", "25.5px"],
+        "lg": ["18px", "19.8px"],
+        "lg2": ["18px", "23.4px"],
+        "l": ["20px", "22px"],
+        "xl": ["20px", "26px"],
+        "xml": ["22px", "24.2px"],
+        "2xl": ["24px", "28.8px"],
+        "2xl1": ["24px", "31.2px"],
+        "2xl2": ["24px", "33.6px"],
+        "2xlm": ["24px", "26.4px"],
+        "3xl": ["26px", "28.6px"],
+        "3xls": ["28px", "33.6px"],
+        "3xl2": ["26px", "33.8px"],
+        "4xs": ["28px", "24px"],
+        "4m": ["28px", "33.6px"],
+        "4l": ["30px", "36px"],
+        "4xl": ["34px", "37.4px"],
+        "5xl": ["38px", "45.6px"],
+        "6xl": ["44px", "52.8px"],
+        "7xl": ["45px", "54px"],
+        "10xl": ["54px", "64.8px"],
+        "11xl": ["60px", "60px"],
+        "13xl": ["70px", "84px"],
+        "16xl": ["94px", "103.4px"],
+        "17xl": ["99px", "108.9px"],
+        "18xl": ["100px", "110px"],
+        "20xl": ["120px", "132px"],
+      },
+      padding: {
+        30: "30px",
+        50: "50px",
+      },
+      screens: {
+        "sm": "480px",
+        "xl": "1354px",
+        "2xl": "undefined",
       },
     },
   },
-  plugins: [],
+  container: {
+    center: true,
+  },
+
+  plugins: [require("@tailwindcss/forms")],
 };
+
 export default config;

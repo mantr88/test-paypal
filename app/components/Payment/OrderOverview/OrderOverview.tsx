@@ -343,12 +343,12 @@ const OrderOverview = ({
         </div>
       </div> */}
       <div className="flex flex-row items-center justify-between gap-[10px]">
-        <ButtonBack
+        {/* <ButtonBack
           handleClick={handleClose}
           addStyles="lg:h-[50px] lg:px-[30px] lg:text-l md:px-4 "
         >
           Zurück
-        </ButtonBack>
+        </ButtonBack> */}
         <ButtonOrderNow
           handleClick={confirmBtnHandler}
           isOrderError={isOrderError || isDeliveryError}

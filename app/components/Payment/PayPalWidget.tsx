@@ -1,3 +1,5 @@
+"use client";
+
 import {
   PayPalButtons,
   PayPalButtonsComponentProps,
@@ -7,8 +9,6 @@ import {
 
 import CustomModal from "../ui/CustomModal";
 import {PaymentStatus} from "./Payment";
-// import {ENDPOINTS} from "@/app/api/api-config";
-// import {fetcher} from "@/app/api/fetcher";
 import {useEffect, useState} from "react";
 import Loader from "../ui/Loader";
 
@@ -21,44 +21,8 @@ interface PayPalWidgetProps {
   exit?: () => void;
 }
 
-const PayPalButtonsWrapper = ({createOrder, onApprove}: any) => {
-  const [{isPending, isResolved}] = usePayPalScriptReducer();
-  console.log("isResolved: ", isResolved);
-
-  const [canRender, setCanRender] = useState(false);
-
-  useEffect(() => {
-    if (isResolved) {
-      setCanRender(true);
-    }
-  }, [isResolved]);
-  console.log(window.paypal);
-
-  if (!canRender) {
-    return <Loader />;
-  }
-
-  // if (isPending) return <Loader />;
-  // if (window.paypal) return <Loader />;
-
-  return (
-    <PayPalButtons
-      style={{
-        shape: "pill",
-        layout: "vertical",
-        color: "blue",
-        label: "paypal",
-      }}
-      createOrder={createOrder}
-      onApprove={onApprove}
-      onError={(error) => {
-        console.error("PayPal Button Error:", error);
-      }}
-    />
-  );
-};
-
 console.log(process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID);
+
 function PayPalWidget({
   exit,
   orderId,
@@ -67,60 +31,117 @@ function PayPalWidget({
   selectPaymentStatus,
   close,
 }: PayPalWidgetProps) {
-  const createOrder = async () => {
-    try {
-      // const response = await fetcher(ENDPOINTS.PAYPAL_CREATE_CHECKOUT, "POST", {
-      //   amount,
-      // });
-      const response = await fetch("/my-server/create-paypal-order", {
-        method: "POST",
-        body: JSON.stringify({
-          amount,
-        }),
-      });
-
-      const orderData = await response.json();
-
-      if (!orderData.id) {
-        const errorDetail = orderData.details[0];
-        const errorMessage =
-          errorDetail ?
-            `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-          : "Unexpected error occurred, please try again.";
-
-        throw new Error(errorMessage);
-      }
-
-      return orderData.id;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+  const initialOptions = {
+    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
+    "enable-funding": "venmo",
+    "disable-funding": "card",
+    "buyer-country": "DE",
+    currency: "EUR",
+    components: "buttons",
   };
 
-  const onApprove: PayPalButtonsComponentProps["onApprove"] = async (
-    data: any
-  ) => {
-    // Capture the funds from the transaction.
-    const response = await fetch("/my-server/capture-paypal-order", {
-      method: "POST",
-      body: JSON.stringify({
-        orderID: data.orderID,
-      }),
-    });
-
-    const details = await response.json();
-
-    // Show success message to buyer
-    alert(`Transaction completed by ${details.payer.name.given_name}`);
-  };
+  const [message, setMessage] = useState("");
 
   return (
     <CustomModal onClose={() => {}}>
-      <PayPalButtonsWrapper
-        createOrder={createOrder}
-        onApprove={onApprove}
-      />
+      <PayPalScriptProvider options={initialOptions}>
+        <PayPalButtons
+          style={{
+            shape: "pill",
+            layout: "vertical",
+            color: "blue",
+            label: "paypal",
+          }}
+          createOrder={async () => {
+            try {
+              const response = await fetch("/api/orders", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                // use the "body" param to optionally pass additional order information
+                // like product ids and quantities
+                body: JSON.stringify({
+                  cart: [
+                    {
+                      id: "YOUR_PRODUCT_ID",
+                      quantity: "YOUR_PRODUCT_QUANTITY",
+                    },
+                  ],
+                }),
+              });
+
+              const orderData = await response.json();
+
+              if (orderData.id) {
+                return orderData.id;
+              } else {
+                const errorDetail = orderData?.details?.[0];
+                const errorMessage =
+                  errorDetail ?
+                    `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
+                  : JSON.stringify(orderData);
+
+                throw new Error(errorMessage);
+              }
+            } catch (error) {
+              console.error(error);
+              setMessage(`Could not initiate PayPal Checkout...${error}`);
+            }
+          }}
+          onApprove={async (data, actions) => {
+            try {
+              const response = await fetch(
+                `/api/orders/${data.orderID}/capture`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+
+              const orderData = await response.json();
+              // Three cases to handle:
+              //   (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
+              //   (2) Other non-recoverable errors -> Show a failure message
+              //   (3) Successful transaction -> Show confirmation or thank you message
+
+              const errorDetail = orderData?.details?.[0];
+
+              if (errorDetail?.issue === "INSTRUMENT_DECLINED") {
+                // (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
+                // recoverable state, per https://developer.paypal.com/docs/checkout/standard/customize/handle-funding-failures/
+                return actions.restart();
+              } else if (errorDetail) {
+                // (2) Other non-recoverable errors -> Show a failure message
+                throw new Error(
+                  `${errorDetail.description} (${orderData.debug_id})`
+                );
+              } else {
+                // (3) Successful transaction -> Show confirmation or thank you message
+                // Or go to another URL:  actions.redirect('thank_you.html');
+                const transaction =
+                  orderData.purchase_units[0].payments.captures[0];
+                setMessage(
+                  `Transaction ${transaction.status}: ${transaction.id}. See console for all available details`
+                );
+                console.log(
+                  "Capture result",
+                  orderData,
+                  JSON.stringify(orderData, null, 2)
+                );
+              }
+            } catch (error) {
+              console.error(error);
+              setMessage(
+                `Sorry, your transaction could not be processed...${error}`
+              );
+            }
+          }}
+        />
+      </PayPalScriptProvider>
+      <div>{message}</div>
     </CustomModal>
   );
 }

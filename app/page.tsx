@@ -11,7 +11,6 @@ function Message({content}: {content: string}) {
 }
 
 export default function Home() {
-  console.log("client id: ", process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "");
   const initialOptions = {
     clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
     "enable-funding": "venmo",
